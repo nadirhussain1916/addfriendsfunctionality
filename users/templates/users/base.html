@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'users/css/bootstrap.css' %}">
+		{% comment %} {%if request.user.is_authenticated %}
+  			<a href="{% url 'posts' %}">My Posts</a>
+  			<a href="{% url 'post-create' %}">New Post</a>
+  			<span>Hi {{ request.user.username | title }}</span>
+  			<a href="{% url 'logout' %}">Logout</a>
+  		{%else%}
+  			<a href="{% url 'register' %}">Register</a>
+  		{%endif%} {% endcomment %}
+    </head>
+    {% comment %} <body> {% endcomment %}
+        
+		{% comment %} {%if request.user.is_authenticated %}
+		<a href="{% url 'posts' %}">My Posts</a>
+		<a href="{% url 'post-create' %}">New Post</a>
+		<span>Hi {{ request.user.username | title }}</span>
+		<a href="{% url 'logout' %}">Logout</a> {% endcomment %}
+	{% comment %} {%else%}
+		<a href="{% url 'login' %}">Login</a>
+		<a href="{% url 'register' %}">Register</a>
+	{%endif%} {% endcomment %}
+<div class="container m-5">
+	{% if messages %}
+	  <div class="messages">
+	  {% for message in messages %}
+		  <div class="alert {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
+			  {{ message }}
+		  </div>
+	  {% endfor %}
+	  </div>
+  {% endif %}
+	  
+  {%block content%} 
+  {%endblock content%}
+</div>
+
+
+        
+        <script src="{% static 'users/js/jquery.js' %}" async defer></script>
+        <script src="{% static 'users/js/popper.js' %}" async defer></script>
+        <script src="{% static 'users/js/bootstrap.js' %}" async defer></script>
+
+    </body>
+</html>
+
+
+

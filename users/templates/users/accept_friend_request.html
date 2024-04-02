@@ -1,0 +1,15 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        {% for friend_request in all friend_requests  %}
+        <h1>
+            {{ friend_request.from_user }}
+            <a href="/accept_friend_request/{{friend_request.id}}">accept friend request</a>
+        </h1>
+        
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

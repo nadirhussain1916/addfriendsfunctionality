@@ -1,0 +1,1 @@
+<h1>Post deleted</h1>
