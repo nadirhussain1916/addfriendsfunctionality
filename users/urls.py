@@ -16,19 +16,10 @@ urlpatterns =[
     path('edit_post/<int:id>/', views.edit_post, name='edit_post'),
     path('post_delete/<int:id>',views.delete_post, name='post_delete'),
     path('like_post/<int:id>',views.like_post, name='like_post'),
-    # new urls
-    # path('users/', views.profile_view, name='profile_view'),
-    # path('friends/', views.friend_list, name='friend_list'),
-    # path('friend-request/send/<int:id>/', views.send_friend_request, name='send_friend_request'),
-    # path('friend-request/cancel/<int:id>/', views.cancel_friend_request, name='cancel_friend_request'),
-    # path('friend-request/accept/<int:id>/', views.accept_friend_request, name='accept_friend_request'),
-    # path('friend-request/delete/<int:id>/', views.delete_friend_request, name='delete_friend_request'),
-    # path('friend/delete/<int:id>/', views.delete_friend, name='delete_friend'),
-    # path('edit-profile/', views.edit_profile, name='edit_profile'),
-    # path('profile/', views.profile, name='profile'),
-    # path('search_users/', views.search_users, name='search_users'),
-    # path('register/', views.register, name='register'),
-
+    path('send-friend-request/<int:id>/', views.send_friend_request, name='send_friend_request'),
+    path('accept-friend-request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
+    path('received-friend-requests/', views.received_friend_requests, name='received_friend_requests'),
+    path('reject-friend-request/<int:request_id>/', views.reject_friend_request, name='reject_friend_request'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

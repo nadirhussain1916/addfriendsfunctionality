@@ -54,7 +54,11 @@ def profile(request, id):
     user = get_object_or_404(User, pk=id)
     allusers=User.objects.exclude(id=user.id)
     posts = Post.objects.filter(author=user)
-    context = {'user': user, 'posts': posts, 'allusers':allusers}
+    user_profile = get_object_or_404(Profile, id=id)
+    friends = user_profile.friends.all()
+    pending_requests = FriendRequest.objects.filter(to_user=request.user)
+    print("0000000000000000000000000000000000",pending_requests)
+    context = {'user': user, 'posts': posts, 'allusers':allusers,'friends':friends,'pending_requests':pending_requests}
     return render(request, 'users/profile.html', context)
 
 
@@ -146,31 +150,25 @@ def delete_post(request, id):
 def send_friend_request(request, id):
     user_to_send_request = User.objects.get(pk=id)
     current_user = request.user
+
     if current_user == user_to_send_request:
         return redirect('profile', id=user_to_send_request.id, request_error='Cannot send request to yourself')
-    potential_friends = User.objects.exclude(pk=current_user).annotate(
-        is_friend=Exists(Friend.objects.filter(user1=current_user, user2=OuterRef('pk'))),
-        has_pending_request=Exists(FriendRequest.objects.filter(from_user=current_user, to_user=OuterRef('pk'), status='PENDING'))
-    ).filter(~Q(is_friend=True), ~Q(has_pending_request=True))
+    existing_request = FriendRequest.objects.filter(from_user=current_user, to_user=user_to_send_request).exists()
+    if existing_request:
+        pass
+    else:
+        friend_request = FriendRequest.objects.create(from_user=current_user, to_user=user_to_send_request)
 
-    # Handle request logic
-    if request.method == 'POST':
-        friend_request, created = FriendRequest.objects.get_or_create(
-            from_user=current_user,
-            to_user=user_to_send_request
-        )
-        if created:
-            # Send notification (optional)
-            return redirect('profile', id=user_to_send_request.id, request_sent=True)
-        else:
-            return redirect('profile', id=user_to_send_request.id, request_exists=True)
+        # return redirect('profile', id=user_to_send_request.id)
+        return redirect('profile', id=current_user.id)
 
-    context = {
-        'potential_friends': potential_friends,
-        'user_to_send_request': user_to_send_request,  # Optional for displaying user info
-        'request_error': request.GET.get('request_error'),  # Handle any errors passed in the URL
-    }
-    return render(request, 'send_friend_request.html', context)
+
+@login_required(login_url='login')
+def received_friend_requests(request):
+    print("======================")
+    pending_requests = FriendRequest.objects.filter(to_user=request.user)
+    print("======================", pending_requests)
+    return render(request, 'profile.html', {'pending_requests': pending_requests}) 
 
 @login_required(login_url='login')
 def accept_friend_request(request, request_id):
@@ -178,11 +176,15 @@ def accept_friend_request(request, request_id):
     if friend_request.to_user == request.user and friend_request.status == 'PENDING':
         friend_request.status = 'ACCEPTED'
         friend_request.save()
-        Friend.objects.create(user1=friend_request.from_user, user2=friend_request.to_user)
-        Friend.objects.create(user1=friend_request.to_user, user2=friend_request.from_user)
-        return redirect('profile', id=friend_request.from_user.id, request_accepted=True)
+        friend_request.to_user.profile.friends.add(friend_request.from_user.profile)
+        friend_request.from_user.profile.friends.add(friend_request.to_user.profile)
+        return redirect('profile', id=request.user.id)
     else:
         return redirect('profile', id=friend_request.from_user.id)
+
+
+
+
 
 @login_required(login_url='login')
 def reject_friend_request(request, request_id):
