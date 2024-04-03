@@ -51,15 +51,16 @@
 
   </div>
   <div class="col-md-4">
-    <h4 class="alert alert-info">All Users</h4>
+    <h4 class="alert alert-info">Users You Can Add as Friends</h4>
     <div class="card">
       <div class="card-body">
         <ul>
           {% for user in allusers %}
-          <li class="mt-2">{{user.username}}
-          <button class="btn btn-primary btn-sm">
-            <a href="{% url 'send_friend_request' user.id %}" class="text-light">Send Friend Request</a>
-          </button></li>
+            <li class="mt-2">{{ user.username }}
+              <button class="btn btn-primary btn-sm">
+                <a href="{% url 'send_friend_request' user.id %}" class="text-light">Send Friend Request</a>
+              </button>
+            </li>
           {% empty %}
             <li>No users found</li>
           {% endfor %}
