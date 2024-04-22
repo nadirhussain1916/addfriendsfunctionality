@@ -24,62 +24,78 @@
     {% comment %} Posts Data {% endcomment %}
     <h1>Posts by {{request.user.username}}</h1>
 <div class="row">
-  {% for post in posts %}
-    <div class="col-md-3 mb-4">
-      <div class="card">
-        <img src="{{ post.image.url }}" class="card-img-top" alt="Post Image">
-        <div class="card-body">
-          <h5 class="card-title">{{ post.title }}</h5>
-          <small class="text-muted">Published on {{ post.published_at | date:"M d, Y" }} by {{ post.author.username }}</small>
-          <p class="card-text">{{ post.content }}</p>
-          <form method="POST" action="{% url 'like_post' id=post.id %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary" name="post_id" value="{{post.id}}">Like {{post.total_likes }}</button>
-          </form>
-          {% if request.user.is_authenticated and request.user == post.author %}
-            <p class="pt-2">
-              <a href="{% url 'edit_post' id=post.id %}" class="btn btn-primary">Edit</a>
-              <a href="{% url 'post_delete' id=post.id %}" class="btn btn-danger">Delete</a>
-            </p>
-          {% endif %}
+    {% for post in posts %}
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <img src="{{ post.image.url }}" class="card-img-top" alt="Post Image">
+          <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <small class="text-muted">Published on {{ post.published_at | date:"M d, Y" }} by {{ post.author.username }}</small>
+            <p class="card-text">{{ post.content }}</p>
+            <form method="POST" action="{% url 'like_post' id=post.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary" name="post_id" value="{{post.id}}">Like {{post.total_likes }}</button>
+            </form>
+            {% if request.user.is_authenticated and request.user == post.author %}
+              <p class="pt-2">
+                <a href="{% url 'edit_post' id=post.id %}" class="btn btn-primary">Edit</a>
+                <a href="{% url 'post_delete' id=post.id %}" class="btn btn-danger">Delete</a>
+              </p>
+            {% endif %}
+          </div>
         </div>
       </div>
-    </div>
-  {% endfor %}
+    {% endfor %}
 </div>
-
-
-  </div>
-  <div class="col-md-4">
-    <h4 class="alert alert-info">Users You Can Add as Friends</h4>
-    <div class="card">
-      <div class="card-body">
-        <ul>
-          {% for user in allusers %}
-            <li class="mt-2">{{ user.username }}
-              <button class="btn btn-primary btn-sm">
-                <a href="{% url 'send_friend_request' user.id %}" class="text-light">Send Friend Request</a>
-              </button>
-            </li>
-          {% empty %}
-            <li>No users found</li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
+</div>
+<div class="col-md-4">
+    <h4 class="alert alert-info">All Users</h4>
+      <div class="card">
+          <div class="card-body">
+            <ul>
+                {% for user in allusers %}
+                    <li class="mt-2">{{ user.username }}
+                        {% if user.profile in pending_requests %}
+                            <span class="text-muted">(Sent)</span>
+                        {% else %}
+                            <form method="post" action="{% url 'send_friend_request' user.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-primary btn-sm">Send Friend Request</button>
+                            </form>
+                        {% endif %}
+                      </li>
+                        {% empty %}
+                      <li>No users found</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    
     
     <h4 class="alert alert-info mt-5">All Friends</h4>
-    <div class="card">
-      <div class="card-body">
-        <ul>
-          {% for friend in friends %}
-            <li class="pt-2">{{ friend.user.username }} </li>
-          {% empty %}
-            <li>Friend is empty</li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
+        <div class="card">
+            <div class="card-body">
+                <ul>
+                  {% for friend in friends %}
+                    <li class="pt-2">{{ friend.user.username }} </li>
+                  {% empty %}
+                    <li>Friend is empty</li>
+                  {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <h4 class="alert alert-info mt-5">Sent Friend Request</h4>
+        <div class="card">
+            <div class="card-body">
+                <ul>
+                  {% for request in sent_requests %}
+                    <li class="pt-2">{{ request.to_user.username }} </li>
+                  {% empty %}
+                    <li>Friend is empty</li>
+                  {% endfor %}
+                </ul>
+            </div>
+        </div>
     <h4 class="alert alert-info mt-5">Received Friend Requests</h4>
       {% if pending_requests %}
           <ul>
