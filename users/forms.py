@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
 from .models import Post,Profile
 
+# 22-4-2024
+
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=65)
     password = forms.CharField(max_length=65, widget=forms.PasswordInput)
